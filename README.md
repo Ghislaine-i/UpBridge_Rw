@@ -75,7 +75,7 @@ upbridge-rwanda-modules-1-8/
 ### 1 — Clone / Open the project
 
 ```powershell
-cd C:\Users\GHISLAINE\Downloads\upbridge-rwanda-modules-1-8
+cd C:\Users\GHISLAINE\Documents\Upbridge-Rw
 ```
 
 ### 2 — Configure the backend environment
@@ -160,7 +160,7 @@ GET http://localhost:5000/api/health
 Open a **second terminal**:
 
 ```powershell
-cd C:\Users\GHISLAINE\Downloads\upbridge-rwanda-modules-1-8\client
+cd C:\Users\GHISLAINE\Documents\Upbridge-Rw\client
 npm install
 ```
 
