@@ -1,52 +1,72 @@
 # UpBridge Rwanda — Full-Stack Web Application
 
-> Learn. Build. Get Hired.
+> **Learn. Build. Get Hired.**
 > A student-facing platform for learning, portfolio building, and opportunity discovery in Rwanda.
+
+---
+
+## 🌍 Live Demo
+
+| Service | URL |
+|---------|-----|
+| **Frontend (Render)** |https://upbridge-rw-1.onrender.com/ |
+| **Backend API (Render)** | https://upbridge-rw.onrender.com/api/health |
 
 ---
 
 ## Technology Stack
 
-| Layer    | Technology                                  |
-|----------|---------------------------------------------|
+| Layer | Technology |
+|-------|------------|
 | Frontend | React 18, Vite, Tailwind CSS, Axios, Lucide |
-| Backend  | Node.js, Express 4, mysql2, jsonwebtoken    |
-| Database | MySQL 8.x                                   |
+| Backend | Node.js, Express 4, mysql2, jsonwebtoken |
+| Database | MySQL 8.x (Aiven Cloud) |
+| Deployment | Render (Frontend + Backend), Aiven (MySQL) |
 
 ---
 
-## Prerequisites
+## Default Admin Credentials
 
-Before running the project you must have the following installed:
+```
+Email:    admin@upbridge.rw
+Password: Admin@1234
+```
 
-| Tool          | Version  | Download                                        |
-|---------------|----------|-------------------------------------------------|
-| Node.js       | ≥ 18.x   | https://nodejs.org                              |
-| MySQL Server  | ≥ 8.0    | https://dev.mysql.com/downloads/mysql/          |
+---
 
-> ⚠️ **MySQL Workbench and MySQL Shell alone are NOT enough.**
-> You need **MySQL Server** installed and the `MySQL80` (or similar) Windows service running.
+## Prerequisites (Local Development Only)
+
+Before running the project locally you must have the following installed:
+
+| Tool | Version | Download |
+|------|---------|----------|
+| Node.js | ≥ 18.x | https://nodejs.org |
+| MySQL Server | ≥ 8.0 | https://dev.mysql.com/downloads/mysql/ |
+
+> ⚠️ MySQL Workbench and MySQL Shell alone are NOT enough. You need MySQL Server installed and the MySQL80 (or similar) Windows service running.
 
 ### Install MySQL Server
-1. Download the **MySQL Community Server** installer from https://dev.mysql.com/downloads/mysql/
+1. Download the MySQL Community Server installer from https://dev.mysql.com/downloads/mysql/
 2. Run the installer and choose **Server only** or **Developer Default**
 3. Set or leave blank the root password (match what you put in `.env`)
 4. After installation, confirm the service is running:
-   ```powershell
-   Get-Service MySQL80
-   # Status should be: Running
-   ```
-5. If it's stopped, start it:
-   ```powershell
-   net start MySQL80
-   ```
+
+```powershell
+Get-Service MySQL80
+# Status should be: Running
+```
+
+If it's stopped, start it:
+```powershell
+net start MySQL80
+```
 
 ---
 
 ## Project Structure
 
 ```
-upbridge-rwanda-modules-1-8/
+upbridge-rwanda/
 ├── server/          # Express API (Node.js)
 │   ├── config/      # DB pool + JWT helpers
 │   ├── controllers/ # Route handlers
@@ -70,17 +90,18 @@ upbridge-rwanda-modules-1-8/
 
 ---
 
-## Step-by-Step Setup
+## 🚀 Local Development Setup
 
-### 1 — Clone / Open the project
+### Step 1 — Clone the Repository
 
-```powershell
-cd C:\Users\GHISLAINE\Documents\Upbridge-Rw
+```bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
 ```
 
-### 2 — Configure the backend environment
+### Step 2 — Configure the Backend Environment
 
-The file `server/.env` is already pre-configured with sensible defaults:
+Create a file at `server/.env` with the following content:
 
 ```env
 PORT=5000
@@ -97,20 +118,20 @@ JWT_SECRET=super_secret_jwt_key_that_is_long_enough_1234
 JWT_EXPIRES_IN=7d
 ```
 
-**If your MySQL root user has a password**, edit `server/.env` and set `DB_PASSWORD=your_actual_password`.
+> If your MySQL root user has a password, edit `server/.env` and set `DB_PASSWORD=your_actual_password`.
 
-### 3 — Install backend dependencies
+### Step 3 — Install Backend Dependencies
 
-```powershell
+```bash
 cd server
 npm install
 ```
 
-### 4 — Set up the database
+### Step 4 — Set Up the Database
 
 > MySQL Server must be running before this step.
 
-```powershell
+```bash
 # Still inside the server/ directory:
 node setupDb.js
 ```
@@ -121,22 +142,24 @@ This script will:
 - Run `database/schema.sql` (creates all tables with IF NOT EXISTS)
 - Run `database/seed_courses.sql` (inserts sample courses)
 - Run `database/seed_opportunities.sql` (inserts sample opportunities)
-- Generate a default admin user `admin@upbridge.rw` (Admin@1234)
+- Generate a default admin user `admin@upbridge.rw` / `Admin@1234`
 
-**Re-run with `--force` to drop and recreate everything:**
-```powershell
+Re-run with `--force` to drop and recreate everything:
+
+```bash
 node setupDb.js --force
 ```
 
 Or via npm scripts:
-```powershell
+
+```bash
 npm run db:setup
 npm run db:setup:force
 ```
 
-### 5 — Start the backend
+### Step 5 — Start the Backend
 
-```powershell
+```bash
 # Development (auto-restarts on file changes):
 npm run dev
 
@@ -155,18 +178,26 @@ Test the health endpoint:
 GET http://localhost:5000/api/health
 ```
 
-### 6 — Install frontend dependencies
+### Step 6 — Install Frontend Dependencies
 
 Open a **second terminal**:
 
-```powershell
-cd C:\Users\GHISLAINE\Documents\Upbridge-Rw\client
+```bash
+cd client
 npm install
 ```
 
-### 7 — Start the frontend
+### Step 7 — Configure the Frontend Environment
 
-```powershell
+Create a file at `client/.env`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Step 8 — Start the Frontend
+
+```bash
 npm run dev
 ```
 
@@ -182,125 +213,146 @@ Open http://localhost:5173 in your browser.
 
 ## Database Schema Overview
 
-| Table                | Purpose                                   |
-|---------------------|-------------------------------------------|
-| `users`             | Students, mentors, and admins             |
-| `courses`           | Learning content catalogue                |
-| `course_enrollments`| Tracks student progress per course        |
-| `projects`          | Student portfolio items                   |
-| `mentors`           | Mentor-specific profile extension         |
-| `opportunities`     | Internship and job postings               |
-| `applications`      | Student applications to opportunities     |
-| `mentorship_sessions`| Booked sessions between students/mentors |
+| Table | Purpose |
+|-------|---------|
+| users | Students, mentors, and admins |
+| courses | Learning content catalogue |
+| course_enrollments | Tracks student progress per course |
+| projects | Student portfolio items |
+| mentors | Mentor-specific profile extension |
+| opportunities | Internship and job postings |
+| applications | Student applications to opportunities |
+| mentorship_sessions | Booked sessions between students/mentors |
 
 ---
 
 ## API Endpoints
 
 ### Auth
-| Method | Endpoint       | Auth     | Description         |
-|--------|---------------|----------|---------------------|
-| POST   | /api/register | Public   | Create account      |
-| POST   | /api/login    | Public   | Login, get JWT      |
-| GET    | /api/me       | JWT      | Get current user    |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | /api/register | Public | Create account |
+| POST | /api/login | Public | Login, get JWT |
+| GET | /api/me | JWT | Get current user |
 
 ### Courses
-| Method | Endpoint                    | Auth     | Description             |
-|--------|-----------------------------|----------|-------------------------|
-| GET    | /api/courses                | Public   | List courses (paginated)|
-| GET    | /api/courses/categories     | Public   | Get all categories      |
-| GET    | /api/courses/my-recent      | JWT      | My enrolled courses     |
-| GET    | /api/courses/:id            | Optional | Course detail           |
-| POST   | /api/courses/:id/continue   | JWT      | Enroll / update progress|
-| POST   | /api/courses                | Admin    | Create course           |
-| PUT    | /api/courses/:id            | Admin    | Update course           |
-| DELETE | /api/courses/:id            | Admin    | Delete course           |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | /api/courses | Public | List courses (paginated) |
+| GET | /api/courses/categories | Public | Get all categories |
+| GET | /api/courses/my-recent | JWT | My enrolled courses |
+| GET | /api/courses/:id | Optional | Course detail |
+| POST | /api/courses/:id/continue | JWT | Enroll / update progress |
+| POST | /api/courses | Admin | Create course |
+| PUT | /api/courses/:id | Admin | Update course |
+| DELETE | /api/courses/:id | Admin | Delete course |
 
 ### Portfolio
-| Method | Endpoint           | Auth | Description        |
-|--------|--------------------|------|--------------------|
-| GET    | /api/portfolio     | JWT  | My projects        |
-| GET    | /api/portfolio/:id | JWT  | Project detail     |
-| POST   | /api/portfolio     | JWT  | Create project     |
-| PUT    | /api/portfolio/:id | JWT  | Update project     |
-| DELETE | /api/portfolio/:id | JWT  | Delete project     |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | /api/portfolio | JWT | My projects |
+| GET | /api/portfolio/:id | JWT | Project detail |
+| POST | /api/portfolio | JWT | Create project |
+| PUT | /api/portfolio/:id | JWT | Update project |
+| DELETE | /api/portfolio/:id | JWT | Delete project |
 
 ### Opportunities
-| Method | Endpoint                | Auth   | Description          |
-|--------|-------------------------|--------|----------------------|
-| GET    | /api/opportunities      | Public | List opportunities   |
-| GET    | /api/opportunities/:id  | Public | Opportunity detail   |
-| POST   | /api/opportunities      | Admin  | Create opportunity   |
-| PUT    | /api/opportunities/:id  | Admin  | Update opportunity   |
-| DELETE | /api/opportunities/:id  | Admin  | Delete opportunity   |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | /api/opportunities | Public | List opportunities |
+| GET | /api/opportunities/:id | Public | Opportunity detail |
+| POST | /api/opportunities | Admin | Create opportunity |
+| PUT | /api/opportunities/:id | Admin | Update opportunity |
+| DELETE | /api/opportunities/:id | Admin | Delete opportunity |
 
 ### Applications
-| Method | Endpoint                           | Auth  | Description              |
-|--------|------------------------------------|-------|--------------------------|
-| GET    | /api/applications                  | JWT   | My applications          |
-| POST   | /api/applications                  | JWT   | Apply to opportunity     |
-| DELETE | /api/applications/:id              | JWT   | Withdraw application     |
-| GET    | /api/applications/admin            | Admin | All applications         |
-| PATCH  | /api/applications/:id/status       | Admin | Update status            |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | /api/applications | JWT | My applications |
+| POST | /api/applications | JWT | Apply to opportunity |
+| DELETE | /api/applications/:id | JWT | Withdraw application |
+| GET | /api/applications/admin | Admin | All applications |
+| PATCH | /api/applications/:id/status | Admin | Update status |
 
 ### Profile
-| Method | Endpoint               | Auth | Description         |
-|--------|------------------------|------|---------------------|
-| GET    | /api/profile           | JWT  | Get profile         |
-| PUT    | /api/profile           | JWT  | Update profile      |
-| PUT    | /api/profile/password  | JWT  | Change password     |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | /api/profile | JWT | Get profile |
+| PUT | /api/profile | JWT | Update profile |
+| PUT | /api/profile/password | JWT | Change password |
 
 ---
 
 ## Frontend Pages
 
-| Page              | Route                    | Auth Required |
-|-------------------|--------------------------|---------------|
-| Landing           | /                        | No            |
-| Login             | /login                   | No            |
-| Register          | /register                | No            |
-| Forgot Password   | /forgot-password         | No            |
-| Dashboard         | /dashboard               | Yes           |
-| Learning Hub      | /learning-hub            | Yes           |
-| Course Detail     | /learning-hub/:id        | Yes           |
-| Portfolio         | /portfolio               | Yes           |
-| Opportunities     | /opportunities           | Yes           |
-| Opportunity Detail| /opportunities/:id       | Yes           |
-| Applications      | /applications            | Yes           |
-| Profile           | /profile                 | Yes           |
+| Page | Route | Auth Required |
+|------|-------|--------------|
+| Landing | / | No |
+| Login | /login | No |
+| Register | /register | No |
+| Forgot Password | /forgot-password | No |
+| Dashboard | /dashboard | Yes |
+| Learning Hub | /learning-hub | Yes |
+| Course Detail | /learning-hub/:id | Yes |
+| Portfolio | /portfolio | Yes |
+| Opportunities | /opportunities | Yes |
+| Opportunity Detail | /opportunities/:id | Yes |
+| Applications | /applications | Yes |
+| Profile | /profile | Yes |
 
 ---
 
 ## Troubleshooting
 
-### ❌ `ECONNREFUSED 127.0.0.1:3306`
+### ❌ ECONNREFUSED 127.0.0.1:3306
 MySQL Server is not running. Run:
 ```powershell
 net start MySQL80
 ```
 
-### ❌ `EADDRINUSE :::5000`
+### ❌ EADDRINUSE :::5000
 Another Node process is using port 5000. Kill it:
 ```powershell
 taskkill /F /IM node.exe
 ```
 Or change `PORT` in `server/.env`.
 
-### ❌ `ER_ACCESS_DENIED_ERROR`
+### ❌ ER_ACCESS_DENIED_ERROR
 Wrong `DB_USER` or `DB_PASSWORD` in `server/.env`.
 
 ### ❌ Frontend shows blank page
 Make sure the backend is running on port 5000. Check browser DevTools console for CORS or network errors.
 
+### ❌ Render app is slow to load
+Render free tier spins down after inactivity. Wait 30–60 seconds for the first load — it will be fast after that.
+
 ---
 
-## Files Modified / Created During Audit
+## Production Deployment
 
-| File | Action | Reason |
-|------|--------|--------|
-| `server/.env` | Updated | Set `DB_PASSWORD=''` and proper `JWT_SECRET` |
-| `server/setupDb.js` | Rewritten | Now reads from `.env`, handles `--force`, skips re-seed |
-| `server/package.json` | Updated | Added `db:setup` and `db:setup:force` scripts |
-| `client/.env` | Created | Explicit `VITE_API_URL` pointing to backend |
-| `client/public/favicon.svg` | Created | Referenced in `index.html` but was missing |
-| `README.md` | Created | This file |
+| Service | Platform | Notes |
+|---------|----------|-------|
+| Frontend + Backend | Render | Auto-deploys from GitHub |
+| Database | Aiven Cloud MySQL | Free tier, always on |
+
+### Environment Variables on Render
+
+| Key | Value |
+|-----|-------|
+| NODE_ENV | production |
+| DB_HOST | mysql-2e5ec42b-alustudent-3084.e.aivencloud.com |
+| DB_PORT | 15664 |
+| DB_USER | avnadmin |
+| DB_PASSWORD | your Aiven password |
+| DB_NAME | defaultdb |
+| JWT_SECRET | your JWT secret |
+| JWT_EXPIRES_IN | 7d |
+| CLIENT_URL | https://upbridge-rw-1.onrender.com/ |
+
+---
+
+## Author
+
+**Ineza Marie Ghislaine**
+African Leadership University (ALU)
+2026
